@@ -1,7 +1,6 @@
 import './App.css';
 import Webcam from "react-webcam";
 import React, { useRef } from 'react';
-import Starfield from './Starfield';
 import { Camera } from "@mediapipe/camera_utils";
 import * as tf from '@tensorflow/tfjs';
 import { useEffect, useState } from 'react';
@@ -38,8 +37,6 @@ function App() {
       return Array(21 * 3).fill(0);
     }
   };
-
-
 
   useEffect(() => {
     async function loadModel() {
@@ -143,13 +140,27 @@ function App() {
     }
   }, []);
 
+  const sliceArray = (arr) => {
+    let secondNot26Index = -1;
+    for (let i = arr.length - 1, count = 0; i >= 0; i--) {
+      if (arr[i] !== 26) {
+        count++;
+        if (count === 2) {
+          secondNot26Index = i;
+          break;
+        }
+      }
+    }
+    return arr.slice(0, secondNot26Index + 1);
+  }
+
 
   const handleFinalPrediction = (prediction) => {
     if (prediction !== undefined) {
       if (prediction === 26 || (globalPredictionsArray.length > 0 && globalPredictionsArray[globalPredictionsArray.length - 1] === 26)) {
         setGlobalPredictionsArray(prevPredictions => {
           if (prediction === 28) {
-            return prevPredictions.slice(0, -3);
+            return sliceArray(prevPredictions);
           } else {
             return [...prevPredictions, prediction];
           }
@@ -232,6 +243,7 @@ function App() {
 
         <div className="line"></div>
         <div className="box"> {globalPredictionsArray.map(prediction => {
+          console.log(globalPredictionsArray);
           if (prediction === 27) {
             return ' ';
           } else if (prediction === 26) {
@@ -240,12 +252,9 @@ function App() {
             return actions[prediction].toString();
           }
         }).join('')} </div>
-
       </div>
     </div>
   );
 
-
 }
-
 export default App;
