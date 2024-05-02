@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/SR_SignLanguageRecognition/static/css/main.86227d84.css",
+    "main.js": "/SR_SignLanguageRecognition/static/js/main.3249dca6.js",
+    "static/js/453.ff2f6e41.chunk.js": "/SR_SignLanguageRecognition/static/js/453.ff2f6e41.chunk.js",
+    "static/media/bck.png": "/SR_SignLanguageRecognition/static/media/bck.8020c1e2bf809eaf73cf.png",
+    "index.html": "/SR_SignLanguageRecognition/index.html",
+    "main.86227d84.css.map": "/SR_SignLanguageRecognition/static/css/main.86227d84.css.map",
+    "main.3249dca6.js.map": "/SR_SignLanguageRecognition/static/js/main.3249dca6.js.map",
+    "453.ff2f6e41.chunk.js.map": "/SR_SignLanguageRecognition/static/js/453.ff2f6e41.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.86227d84.css",
+    "static/js/main.3249dca6.js"
+  ]
+}
