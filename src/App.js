@@ -7,8 +7,6 @@ import { useEffect, useState } from 'react';
 import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
 
-
-
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
@@ -18,7 +16,6 @@ function App() {
   const [globalPredictionsArray, setGlobalPredictionsArray] = useState([]);
   const actions = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i))
     .concat(['next', 'space', 'backspace']);
-
   const initialFramesBuffer = Array.from({ length: 45 }, () => Array.from({ length: 63 }, () => 0));
   const [framesBuffer, setFramesBuffer] = useState(initialFramesBuffer);
 
@@ -169,6 +166,24 @@ function App() {
     }
   };
 
+  const handleSpeak = () => {
+    const text = globalPredictionsArray.map(prediction => {
+      if (prediction === 27) {
+        return ' ';
+      } else if (prediction === 26) {
+        return '';
+      } else {
+        return actions[prediction].toString();
+      }
+    }).join('');
+    console.log(text);
+    if ('speechSynthesis' in window) {
+      const speech = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(speech);
+    } else {
+      alert("Sorry, your browser doesn't support speech synthesis.");
+    }
+  };
 
   useEffect(() => {
     if (framesBuffer.length === 45 && model.current) {
@@ -243,7 +258,6 @@ function App() {
 
         <div className="line"></div>
         <div className="box"> {globalPredictionsArray.map(prediction => {
-          console.log(globalPredictionsArray);
           if (prediction === 27) {
             return ' ';
           } else if (prediction === 26) {
@@ -252,6 +266,8 @@ function App() {
             return actions[prediction].toString();
           }
         }).join('')} </div>
+         <button className="gradientButton" onClick={handleSpeak}>Hear the text</button>
+
       </div>
     </div>
   );

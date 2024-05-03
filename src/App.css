@@ -67,3 +67,24 @@
 
  
   
+  .gradientButton {
+    background: linear-gradient(to bottom, #000000 5%, #3e053e); 
+    display: flex;   /* Define your gradient */
+      align-items: center;
+      justify-content: center;
+      margin-right: auto;
+      margin-left: auto;
+      margin-top: 10px;
+    color: white;
+    padding: 10px 20px;
+    font-size: 18px;
+    width : 250px;
+    cursor: pointer;
+    border-radius: 15px;
+    font-family: "Times New Roman", Times, serif; 
+  }
+  
+  .gradientButton:hover {
+    background: linear-gradient(to bottom, #3e053e 5%, #000000);  /* Define gradient for hover state */
+  }
+  
