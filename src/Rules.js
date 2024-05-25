@@ -118,7 +118,7 @@ function Rules() {
             </div>
           ))}
         </div>
-        <div className="full-rule" style={{ marginTop: '2%', marginBottom: '3%', height: '140px' }}>
+        <div className="full-rule" style={{ marginTop: '5%', marginBottom: '3%', height: '140px' }}>
           {images1.map((url, index) => (
             <div key={index} className="imgRule" >
               <div key={index} className="img-container" style={{ height: '140px', backgroundImage: `url(${url})` }}> </div>
@@ -126,7 +126,7 @@ function Rules() {
             </div>
           ))}
         </div>
-        <div className="full-rule" style={{ marginTop: '2%', marginBottom: '6%' }}>
+        <div className="full-rule" style={{ marginTop: '5%', marginBottom: '6%' }}>
           {images2.map((url, index) => (
             <div key={index} className="imgRule" >
               <div className="img-container" style={{ height: '100px', width: '150px', backgroundImage: `url(${url})` }}> </div>
