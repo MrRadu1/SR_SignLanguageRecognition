@@ -88,6 +88,7 @@ function App() {
 
     canvasCtx.globalCompositeOperation = 'source-over';
     const keypoints = extractKeyPoints(results);
+  
     setFramesBuffer(prevBuffer => {
       if (prevBuffer.length < 30) {
         return [...prevBuffer, keypoints];
@@ -176,15 +177,7 @@ function App() {
   };
 
   const handleSpeak = () => {
-    const text = globalPredictionsArray.map(prediction => {
-      if (prediction === 27) {
-        return ' ';
-      } else if (prediction === 26) {
-        return '';
-      } else {
-        return actions[prediction].toString();
-      }
-    }).join('');
+    const text = ArrayToString(globalPredictionsArray);
     if ('speechSynthesis' in window) {
       const speech = new SpeechSynthesisUtterance(text);
       window.speechSynthesis.speak(speech);
@@ -210,14 +203,14 @@ function App() {
             } else {
               setPredictionCount(prevCount => prevCount + 1);
             }
-            if (predictionCount >= 1 && result === lastPrediction && result !== 2) {
+            if (predictionCount >= 1 && result === lastPrediction && result !== 1) {
               handleFinalPrediction(result);
               setPredictionCount(0);
             }
-            if (predictionCount >= 1 && result === lastPrediction && result === 2) {
+            if (predictionCount >= 1 && result === lastPrediction && result === 1) {
               setPredictionCount(2);
             }
-            if (predictionCount >= 2 && result === lastPrediction && result === 2 ) {
+            if (predictionCount >= 2 && result === lastPrediction && result === 1 ) {
               handleFinalPrediction(result);
               setPredictionCount(0);
             }
@@ -251,7 +244,6 @@ function App() {
 
   const ArrayToString = (input) => { 
     const result = globalPredictionsArray.map(prediction => {
-          
       if (prediction === 27) {
         return ' ';
       } else if (prediction === 26) {
@@ -266,34 +258,30 @@ function App() {
 
   useEffect(() => {
     const correctSpelling = async () => {
-      if (globalPredictionsArray.length===0) return; // Prevent unnecessary requests
-       const inputText = globalPredictionsArray.map(prediction => {
-        if (prediction === 27) {
-          return ' ';
-        } else if (prediction === 26) {
-          return '';
-        } else {
-          return actions[prediction].toString();
-        }
-      }).join('');
-      try {
+      if (globalPredictionsArray.length===0) 
+        return; 
+      const inputText = ArrayToString(globalPredictionsArray);
+      if (globalPredictionsArray[globalPredictionsArray.length-1] === 27) {
+        console.log('space');
+        try {
 
-        const response = await fetch('http://127.0.0.1:5000/correct_spelling', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ text: inputText.toLowerCase() }),
-        });
-        const data = await response.json();
-        const data_temp = data.corrected_text;
-        if (data.corrected_text.toUpperCase() !== ArrayToString(globalPredictionsArray)) { 
-          console.log("da");
-           setCorrectedText(data.corrected_text);
+          const response = await fetch('https://spell-correction-app-sr-5d6569a62399.herokuapp.com/correct_spelling', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: inputText.toLowerCase() }),
+          });
+          const data = await response.json();
+          if (data.corrected_text.toUpperCase() !== ArrayToString(globalPredictionsArray)) { 
+            console.log(data.corrected_text);
+             setCorrectedText(data.corrected_text);
+          }
+        } catch (error) {
+          console.error('Error:', error);
         }
-      } catch (error) {
-        console.error('Error:', error);
       }
+      
     };
     
     correctSpelling();
