@@ -8,12 +8,12 @@
   color: white; 
   font-size: 24px; 
   font-family: "Times New Roman", Times, serif; 
-  border-bottom-left-radius: 15px; /* Adjust radius as needed */
-  border-bottom-right-radius: 15px; 
+  border-radius: 15px; 
+  border: white 1px solid;
   }
 
   .line {
-    width: 437px; 
+    width: 440px; 
     height: 1px;
     background-color: white;
   }
@@ -33,6 +33,43 @@
   border-top-left-radius: 15px; /* Adjust radius as needed */
   border-top-right-radius: 15px; 
   }
+  .box3 {
+    position: relative; /* Ensure relative positioning */
+    width: 400px;
+    height: 50px;
+    background: linear-gradient(to bottom, #000000 5%, #3e053e);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
+    color: white;
+    font-size: 24px;
+    font-family: "Times New Roman", Times, serif;
+    border-bottom-left-radius: 15px; /* Adjust radius as needed */
+    border-bottom-right-radius: 15px;
+  }
+  
+  .box3-content {
+    flex: 1; /* Allow content to grow */
+  }
+  
+  .overlay-button {
+    position: absolute; /* Position the button absolutely */
+    top: 50%; /* Position it 50% from the top of the .box3 */
+    left: 45%; 
+    height: 30px;/* Position it 46% from the right of the .box3 */
+     /* Adjust the distance from the right as needed */
+    transform: translateY(-50%); /* Center vertically */
+    background-color: transparent; /* Remove background */
+    color: white;
+    border-radius: 15px; /* Adjust radius as needed */
+    font-family: "Times New Roman", Times, serif;
+
+    cursor: pointer;
+    font-size: 24px;
+     /* Adjust font size as needed */
+  }
+
 
   .container {
     display: flex;
@@ -55,13 +92,13 @@
   .boxes-container {
     display: flex;
     flex-direction: column;
-    margin-top: 12%;
+    margin-top: 9%;
     margin-right: 10%;
   }
 
   .point-container {
     display: flex;
-    margin-top: 13.5%;
+    margin-top: 10.5%;
     margin-left: 20%;
   } 
 

@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
 
+
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
@@ -14,10 +15,18 @@ function App() {
   const [lastPrediction, setLastPrediction] = useState(null);
   const [predictionCount, setPredictionCount] = useState(0);
   const [globalPredictionsArray, setGlobalPredictionsArray] = useState([]);
+  const [correctedText, setCorrectedText] = useState('');
   const actions = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i))
     .concat(['next', 'space', 'backspace']);
-  const initialFramesBuffer = Array.from({ length: 45 }, () => Array.from({ length: 63 }, () => 0));
+  const initialFramesBuffer = Array.from({ length: 30 }, () => Array.from({ length: 63 }, () => 0));
   const [framesBuffer, setFramesBuffer] = useState(initialFramesBuffer);
+  const labelMap = {
+    'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9,
+    'K': 10, 'L': 11, 'M': 12, 'N': 13, 'O': 14, 'P': 15, 'Q': 16, 'R': 17, 'S': 18, 
+    'T': 19, 'U': 20, 'V': 21, 'W': 22, 'X': 23, 'Y': 24, 'Z': 25, 'next': 26, 
+    'space': 27, 'backspace': 28
+  };
+
 
   const extractKeyPoints = (results) => {
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
@@ -79,8 +88,9 @@ function App() {
 
     canvasCtx.globalCompositeOperation = 'source-over';
     const keypoints = extractKeyPoints(results);
+  
     setFramesBuffer(prevBuffer => {
-      if (prevBuffer.length < 45) {
+      if (prevBuffer.length < 30) {
         return [...prevBuffer, keypoints];
       } else {
         const newBuffer = [...prevBuffer.slice(1), keypoints];
@@ -154,7 +164,7 @@ function App() {
 
   const handleFinalPrediction = (prediction) => {
     if (prediction !== undefined) {
-      if (prediction === 26 || (globalPredictionsArray.length > 0 && globalPredictionsArray[globalPredictionsArray.length - 1] === 26)) {
+      if ( (globalPredictionsArray.length === 0 &&  prediction === 26) || (globalPredictionsArray.length > 0 && globalPredictionsArray[globalPredictionsArray.length - 1] !== 26 && prediction === 26) || (globalPredictionsArray.length > 0 && globalPredictionsArray[globalPredictionsArray.length - 1] === 26)) {
         setGlobalPredictionsArray(prevPredictions => {
           if (prediction === 28) {
             return sliceArray(prevPredictions);
@@ -167,16 +177,7 @@ function App() {
   };
 
   const handleSpeak = () => {
-    const text = globalPredictionsArray.map(prediction => {
-      if (prediction === 27) {
-        return ' ';
-      } else if (prediction === 26) {
-        return '';
-      } else {
-        return actions[prediction].toString();
-      }
-    }).join('');
-    console.log(text);
+    const text = ArrayToString(globalPredictionsArray);
     if ('speechSynthesis' in window) {
       const speech = new SpeechSynthesisUtterance(text);
       window.speechSynthesis.speak(speech);
@@ -186,10 +187,12 @@ function App() {
   };
 
   useEffect(() => {
-    if (framesBuffer.length === 45 && model.current) {
+    if (framesBuffer.length === 30 && model.current) {
       const allFramesZero = framesBuffer.every(frame => frame.every(value => value === 0));
       if (!allFramesZero) {
-        predict(framesBuffer)
+        const lastValue = framesBuffer[framesBuffer.length - 1];
+        const extendedArray = [...framesBuffer, ...Array(15).fill(lastValue)];
+        predict(extendedArray)
           .then(result => {
             if (result === 26) {
               handleFinalPrediction(result);
@@ -200,12 +203,19 @@ function App() {
             } else {
               setPredictionCount(prevCount => prevCount + 1);
             }
-            if (predictionCount >= 1 && result === lastPrediction) {
+            if (predictionCount >= 1 && result === lastPrediction && result !== 1) {
+              handleFinalPrediction(result);
+              setPredictionCount(0);
+            }
+            if (predictionCount >= 1 && result === lastPrediction && result === 1) {
+              setPredictionCount(2);
+            }
+            if (predictionCount >= 2 && result === lastPrediction && result === 1 ) {
               handleFinalPrediction(result);
               setPredictionCount(0);
             }
             setFramesBuffer(prevBuffer => {
-              return prevBuffer.slice(25);
+              return prevBuffer.slice(10);
             });
           })
           .catch(error => {
@@ -217,6 +227,70 @@ function App() {
     }
   }, [framesBuffer, lastPrediction, predictionCount]);
 
+  const convertStringToArray = (input) => {
+    const result = [];
+    const upperInput = input.toUpperCase();
+  
+    for (let i = 0; i < upperInput.length; i++) {
+      if (upperInput[i] === ' ') {
+        result.push(labelMap['space']);
+      } else if (labelMap.hasOwnProperty(upperInput[i])) {
+        result.push(labelMap[upperInput[i]]);
+      }
+    }
+  
+    return result;
+  };
+
+  const ArrayToString = (input) => { 
+    const result = globalPredictionsArray.map(prediction => {
+      if (prediction === 27) {
+        return ' ';
+      } else if (prediction === 26) {
+        return '';
+      } else {
+        return actions[prediction].toString();
+      }
+    }).join('')
+    return result;
+  };
+  
+
+  useEffect(() => {
+    const correctSpelling = async () => {
+      if (globalPredictionsArray.length===0) 
+        return; 
+      const inputText = ArrayToString(globalPredictionsArray);
+      if (globalPredictionsArray[globalPredictionsArray.length-1] === 27) {
+        console.log('space');
+        try {
+
+          const response = await fetch('https://spell-correction-app-sr-5d6569a62399.herokuapp.com/correct_spelling', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: inputText.toLowerCase() }),
+          });
+          const data = await response.json();
+          if (data.corrected_text.toUpperCase() !== ArrayToString(globalPredictionsArray)) { 
+            console.log(data.corrected_text);
+             setCorrectedText(data.corrected_text);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      }
+      
+    };
+    
+    correctSpelling();
+  }, [globalPredictionsArray]);
+
+  const handleConvert = () => {
+    setGlobalPredictionsArray(convertStringToArray(correctedText));
+    setCorrectedText('');
+  };
 
   return (
 
@@ -254,10 +328,16 @@ function App() {
           <div style={{ width: '30px', height: '30px', backgroundColor: 'red', borderRadius: '50%', marginRight: '10px' }}></div>
         )}</div>
       <div className="boxes-container">
-        <div className="box2"> Latest Predict: {actions[globalPredictionsArray[globalPredictionsArray.length - 1]]}  </div>
-
-        <div className="line"></div>
-        <div className="box"> {globalPredictionsArray.map(prediction => {
+      <div style={{marginBottom: '20px', width: '440px', height: '180px', border: '#ffffff 1px solid' , borderRadius: '15px', display: 'flex', flexDirection: 'column'}}>
+      <div className="box2"> Latest Predict: {actions[globalPredictionsArray[globalPredictionsArray.length - 1]]}  </div>
+      <div className="line"></div>
+      <div className="box3">
+          Have you meant: 
+          {correctedText && (correctedText.toUpperCase() !== ArrayToString(globalPredictionsArray)) && (<button className="overlay-button" onClick={handleConvert}>{correctedText}</button> )}
+        </div>
+        </div>
+         <div className="box"> {globalPredictionsArray.map(prediction => {
+          
           if (prediction === 27) {
             return ' ';
           } else if (prediction === 26) {
