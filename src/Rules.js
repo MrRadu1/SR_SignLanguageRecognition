@@ -90,7 +90,7 @@ function Rules() {
     <div className="rules-container">
       <div className="dashboard">
         <div className='button-box'>
-          <span onClick={() => navigate("/SR_SignLanguageRecognition")}>Home</span>
+          <span onClick={() => navigate("/")}>Home</span>
         </div>
         <div className='button-box'>
           <span onClick={() => navigate("/SR_SignLanguageRules")}>Rules</span>
