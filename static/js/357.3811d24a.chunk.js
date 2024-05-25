@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunksign_recognition=self.webpackChunksign_recognition||[]).push([[357],{8357:(e,i,n)=>{e.exports=n.p+"static/media/T.bc5f2b0e8f5a229f1866.png"}}]);
