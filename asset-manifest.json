@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/SR_SignLanguageRecognition/static/css/main.477059c9.css",
-    "main.js": "/SR_SignLanguageRecognition/static/js/main.79482f03.js",
+    "main.css": "/SR_SignLanguageRecognition/static/css/main.f0bb25f9.css",
+    "main.js": "/SR_SignLanguageRecognition/static/js/main.a2ad874d.js",
     "static/js/453.ff2f6e41.chunk.js": "/SR_SignLanguageRecognition/static/js/453.ff2f6e41.chunk.js",
     "static/media/bck.png": "/SR_SignLanguageRecognition/static/media/bck.8020c1e2bf809eaf73cf.png",
     "index.html": "/SR_SignLanguageRecognition/index.html",
-    "main.477059c9.css.map": "/SR_SignLanguageRecognition/static/css/main.477059c9.css.map",
-    "main.79482f03.js.map": "/SR_SignLanguageRecognition/static/js/main.79482f03.js.map",
+    "main.f0bb25f9.css.map": "/SR_SignLanguageRecognition/static/css/main.f0bb25f9.css.map",
+    "main.a2ad874d.js.map": "/SR_SignLanguageRecognition/static/js/main.a2ad874d.js.map",
     "453.ff2f6e41.chunk.js.map": "/SR_SignLanguageRecognition/static/js/453.ff2f6e41.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.477059c9.css",
-    "static/js/main.79482f03.js"
+    "static/css/main.f0bb25f9.css",
+    "static/js/main.a2ad874d.js"
   ]
 }
